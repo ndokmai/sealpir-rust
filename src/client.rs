@@ -6,11 +6,9 @@ use super::{PirQuery, PirReply};
 
 extern "C" {
     fn new_parameters(ele_num: u32, ele_size: u32, N: u32, logt: u32, d: u32) -> *mut libc::c_void;
-    fn update_parameters(params: *mut libc::c_void, ele_num: u32, ele_size: u32, d: u32);
     fn delete_parameters(params: *mut libc::c_void);
 
     fn new_pir_client(params: *const libc::c_void) -> *mut libc::c_void;
-    fn update_client_params(pir_client: *mut libc::c_void, params: *const libc::c_void);
     fn delete_pir_client(pir_client: *mut libc::c_void);
 
     fn get_fv_index(pir_client: *const libc::c_void, ele_idx: u32, ele_size: u32) -> u32;
@@ -81,16 +79,6 @@ impl<'a> PirClient<'a> {
             ele_num,
             key,
         }
-    }
-
-    pub fn update_params(&mut self, ele_num: u32, ele_size: u32, d: u32) {
-        unsafe {
-            update_parameters(self.params, ele_num, ele_size, d);
-            update_client_params(self.client, self.params);
-        }
-
-        self.ele_size = ele_size;
-        self.ele_num = ele_num;
     }
 
     pub fn get_key(&'a self) -> &'a Vec<u8> {

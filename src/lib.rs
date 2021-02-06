@@ -1,7 +1,4 @@
-extern crate libc;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PirQuery {
