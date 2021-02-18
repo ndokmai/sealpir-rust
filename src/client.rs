@@ -33,15 +33,15 @@ extern "C" {
     ) -> *mut u8;
 }
 
-pub struct PirClient<'a> {
-    client: &'a mut libc::c_void,
-    params: &'a mut libc::c_void,
+pub struct PirClient {
+    client: *mut libc::c_void,
+    params: *mut libc::c_void,
     ele_size: u32,
     ele_num: u32,
     key: Vec<u8>,
 }
 
-impl<'a> Drop for PirClient<'a> {
+impl Drop for PirClient {
     fn drop(&mut self) {
         unsafe {
             delete_pir_client(self.client);
@@ -50,18 +50,18 @@ impl<'a> Drop for PirClient<'a> {
     }
 }
 
-impl<'a> PirClient<'a> {
+impl PirClient {
     pub fn new(
         ele_num: u32,
         ele_size: u32,
         poly_degree: u32,
         log_plain_mod: u32,
         d: u32,
-    ) -> PirClient<'a> {
-        let param_ptr: &'a mut libc::c_void =
-            unsafe { &mut *(new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d)) };
+    ) -> PirClient {
+        let param_ptr: *mut libc::c_void =
+            unsafe { new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d) };
 
-        let client_ptr: &'a mut libc::c_void = unsafe { &mut *(new_pir_client(param_ptr)) };
+        let client_ptr: *mut libc::c_void = unsafe { new_pir_client(param_ptr) };
 
         let mut key_size: u32 = 0;
 
@@ -81,7 +81,7 @@ impl<'a> PirClient<'a> {
         }
     }
 
-    pub fn get_key(&'a self) -> &'a Vec<u8> {
+    pub fn get_key(&self) -> &Vec<u8> {
         &self.key
     }
 

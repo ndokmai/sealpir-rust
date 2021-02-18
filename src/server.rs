@@ -37,14 +37,14 @@ extern "C" {
     ) -> *mut u8;
 }
 
-pub struct PirServer<'a> {
-    server: &'a mut libc::c_void,
-    params: &'a mut libc::c_void,
+pub struct PirServer {
+    server: *mut libc::c_void,
+    params: *mut libc::c_void,
     ele_num: u32,
     ele_size: u32,
 }
 
-impl<'a> Drop for PirServer<'a> {
+impl Drop for PirServer {
     fn drop(&mut self) {
         unsafe {
             delete_pir_server(self.server);
@@ -53,17 +53,17 @@ impl<'a> Drop for PirServer<'a> {
     }
 }
 
-impl<'a> PirServer<'a> {
+impl PirServer {
     pub fn new(
         ele_num: u32,
         ele_size: u32,
         poly_degree: u32,
         log_plain_mod: u32,
         d: u32,
-    ) -> PirServer<'a> {
-        let params: &'a mut libc::c_void =
-            unsafe { &mut *(new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d)) };
-        let server_ptr: &'a mut libc::c_void = unsafe { &mut *(new_pir_server(params)) };
+    ) -> PirServer {
+        let params: *mut libc::c_void =
+            unsafe { new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d) };
+        let server_ptr: *mut libc::c_void = unsafe { new_pir_server(params) };
 
         PirServer {
             server: server_ptr,
