@@ -3,6 +3,11 @@ use libc;
 use std::mem;
 use std::slice;
 
+#[cfg(feature = "suppress-stdout")]
+use super::output_log_info;
+#[cfg(feature = "suppress-stdout")]
+use gag::BufferRedirect;
+
 extern "C" {
     fn new_parameters(ele_num: u32, ele_size: u32, N: u32, logt: u32, d: u32) -> *mut libc::c_void;
     fn delete_parameters(params: *mut libc::c_void);
@@ -61,9 +66,16 @@ impl PirServer {
         log_plain_mod: u32,
         d: u32,
     ) -> PirServer {
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
         let params: *mut libc::c_void =
             unsafe { new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d) };
+
         let server_ptr: *mut libc::c_void = unsafe { new_pir_server(params) };
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
 
         PirServer {
             server: server_ptr,
@@ -77,6 +89,9 @@ impl PirServer {
         assert_eq!(collection.len(), self.ele_num as usize);
         assert_eq!(mem::size_of::<T>(), self.ele_size as usize);
 
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
         unsafe {
             set_database(
                 self.server,
@@ -87,6 +102,9 @@ impl PirServer {
 
             preprocess_db(self.server);
         }
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
     }
 
     pub fn set_galois_key(&mut self, key: &[u8], client_id: u32) {
@@ -97,6 +115,9 @@ impl PirServer {
 
     #[inline]
     pub fn gen_reply(&self, query: &PirQuery, client_id: u32) -> PirReply {
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
         let mut reply_size: u32 = 0;
         let mut reply_num: u32 = 0;
 
@@ -116,6 +137,9 @@ impl PirServer {
             libc::free(ptr as *mut libc::c_void);
             ans
         };
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
 
         PirReply {
             reply,

@@ -2,7 +2,11 @@ use libc;
 use std::mem;
 use std::slice;
 
+#[cfg(feature = "suppress-stdout")]
+use super::output_log_info;
 use super::{PirQuery, PirReply};
+#[cfg(feature = "suppress-stdout")]
+use gag::BufferRedirect;
 
 extern "C" {
     fn new_parameters(ele_num: u32, ele_size: u32, N: u32, logt: u32, d: u32) -> *mut libc::c_void;
@@ -58,6 +62,9 @@ impl PirClient {
         log_plain_mod: u32,
         d: u32,
     ) -> PirClient {
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
         let param_ptr: *mut libc::c_void =
             unsafe { new_parameters(ele_num, ele_size, poly_degree, log_plain_mod, d) };
 
@@ -71,6 +78,9 @@ impl PirClient {
             libc::free(ptr as *mut libc::c_void);
             key
         };
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
 
         PirClient {
             client: client_ptr,
@@ -87,6 +97,8 @@ impl PirClient {
 
     pub fn gen_query(&self, index: u32) -> PirQuery {
         assert!(index <= self.ele_num);
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
 
         let mut query_size: u32 = 0; // # of bytes
         let mut query_num: u32 = 0; // # of ciphertexts
@@ -99,6 +111,9 @@ impl PirClient {
             q
         };
 
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
+
         PirQuery {
             query,
             num: query_num,
@@ -110,6 +125,8 @@ impl PirClient {
         T: Clone,
     {
         assert_eq!(self.ele_size as usize, mem::size_of::<T>());
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
 
         let mut result_size: u32 = 0;
         let result: T = unsafe {
@@ -131,6 +148,9 @@ impl PirClient {
             libc::free(ptr as *mut libc::c_void);
             r[0].clone()
         };
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
 
         result
     }
