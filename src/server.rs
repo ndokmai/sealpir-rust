@@ -21,11 +21,20 @@ extern "C" {
         key_size: u32,
         client_id: u32,
     );
+
     fn set_database(
         pir_server: *mut libc::c_void,
         database: *const u8,
         ele_num: u32,
         ele_size: u32,
+    );
+
+    fn update_database(
+        pir_server: *mut libc::c_void,
+        database: *const u8,
+        ele_num: u32,
+        ele_size: u32,
+        ele_index: u32,
     );
 
     fn preprocess_db(pir_server: *mut libc::c_void);
@@ -105,6 +114,24 @@ impl PirServer {
 
         #[cfg(feature = "suppress-stdout")]
         output_log_info(stdout_buf.as_mut());
+    }
+
+    pub fn update<T>(&mut self, collection: &[T], index: usize) {
+        assert_eq!(collection.len(), self.ele_num as usize);
+        assert_eq!(mem::size_of::<T>(), self.ele_size as usize);
+        assert!(index < collection.len());
+
+        unsafe {
+            update_database(
+                self.server,
+                collection.as_ptr() as *const u8,
+                self.ele_num,
+                self.ele_size,
+                index as u32,
+            );
+
+            preprocess_db(self.server);
+        }
     }
 
     pub fn set_galois_key(&mut self, key: &[u8], client_id: u32) {

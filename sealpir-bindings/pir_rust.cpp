@@ -91,9 +91,12 @@ uint8_t *generate_reply(const void *pir_server, const void *params, const uint8_
 
 void set_database(void *pir_server, const uint8_t *database, uint32_t ele_num, uint32_t ele_size) {
     PIRServer *server = (PIRServer *)pir_server;
-    auto database_clone = std::make_unique<std::uint8_t[]>(ele_num * ele_size);
-    memcpy(database_clone.get(), database, ele_num * ele_size);
-    server->set_database(move(database_clone), ele_num, ele_size);
+    server->set_database(database, ele_num, ele_size);
+}
+
+void update_database(void *pir_server, const uint8_t *database, uint32_t ele_num, uint32_t ele_size, uint32_t ele_index) {
+    PIRServer *server = (PIRServer *)pir_server;
+    server->update_database(database, ele_num, ele_size, ele_index);
 }
 
 void preprocess_db(void *pir_server) {

@@ -58,6 +58,9 @@ void set_galois_key(void *pir_server, const uint8_t *galois_key, uint32_t key_si
 // sets the existing database
 void set_database(void *pir_server, const uint8_t *database, uint32_t ele_num, uint32_t ele_size);
 
+// update the existing database
+void update_database(void *pir_server, const uint8_t *database, uint32_t ele_num, uint32_t ele_size, uint32_t ele_index);
+
 // preprocesses the database
 void preprocess_db(void *pir_server);
 
