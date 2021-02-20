@@ -77,6 +77,43 @@ fn pir_small_collection_test() {
     let index = 0;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
+    let result = client.decode_reply_to_vec(index, &reply);
+    assert_eq!(&result[..], &truth[index as usize][..]);
+}
+
+#[test]
+fn pir_small_collection_decode_to_vec_test() {
+    logger_init();
+
+    let poly_degree = 2048;
+    let log_plain_mod = 12;
+    let num = 100;
+    let d = 2;
+
+    let mut collection: Vec<[u8; 288]> = Vec::new();
+    let mut rng = rand::thread_rng();
+
+    for _ in 0..num {
+        let mut x: [u8; 288] = [0; 288];
+        rng.fill_bytes(&mut x);
+        collection.push(x);
+    }
+
+    let truth = collection.clone();
+
+    let mut server = PirServer::new(num, 288, poly_degree, log_plain_mod, d);
+    let client = PirClient::new(num, 288, poly_degree, log_plain_mod, d);
+
+    {
+        let key = client.get_key();
+        server.set_galois_key(key, 0);
+    }
+
+    server.setup(&collection[..]);
+
+    let index = 0;
+    let query = client.gen_query(index);
+    let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
     assert_eq!(&result[..], &truth[index as usize][..]);
 }

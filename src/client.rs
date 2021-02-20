@@ -154,4 +154,39 @@ impl PirClient {
 
         result
     }
+
+    pub fn decode_reply_to_vec(&self, ele_index: u32, reply: &PirReply) -> Vec<u8> {
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
+        let mut result_size: u32 = 0;
+        let result = unsafe {
+            // returns the content of the FV plaintext
+            let ptr = decode_reply(
+                self.client,
+                self.params,
+                reply.reply.as_ptr(),
+                reply.reply.len() as u32,
+                reply.num,
+                &mut result_size,
+            );
+
+            // offset into the FV plaintext
+            let offset = get_fv_offset(self.client, ele_index, self.ele_size);
+            assert!(offset + self.ele_size <= result_size as u32);
+
+            let r = slice::from_raw_parts_mut(
+                (ptr as *mut u8).offset(offset as isize),
+                self.ele_size as usize,
+            )
+            .to_vec();
+            libc::free(ptr as *mut libc::c_void);
+            r
+        };
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
+
+        result
+    }
 }
