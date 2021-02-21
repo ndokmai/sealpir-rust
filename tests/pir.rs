@@ -2,14 +2,8 @@ use rand::{Rng, RngCore};
 use sealpir::client::PirClient;
 use sealpir::server::PirServer;
 
-fn logger_init() {
-    let _ = env_logger::builder().is_test(true).try_init();
-}
-
 #[test]
 fn pir_very_small_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 2;
@@ -46,8 +40,6 @@ fn pir_very_small_collection_test() {
 
 #[test]
 fn pir_small_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 100;
@@ -83,8 +75,6 @@ fn pir_small_collection_test() {
 
 #[test]
 fn pir_small_collection_decode_to_vec_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 100;
@@ -120,8 +110,6 @@ fn pir_small_collection_decode_to_vec_test() {
 
 #[test]
 fn pir_small_collection_update_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 100;
@@ -160,8 +148,6 @@ fn pir_small_collection_update_test() {
 
 #[test]
 fn pir_medium_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 1 << 16;
@@ -197,8 +183,6 @@ fn pir_medium_collection_test() {
 
 #[test]
 fn pir_large_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 1 << 18;
@@ -231,8 +215,6 @@ fn pir_large_collection_test() {
 
 #[test]
 fn pir_very_large_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 1 << 20;
@@ -269,8 +251,6 @@ fn pir_very_large_collection_test() {
 
 #[test]
 fn pir_largest_collection_test() {
-    logger_init();
-
     let poly_degree = 2048;
     let log_plain_mod = 12;
     let num = 1 << 22;
@@ -307,8 +287,6 @@ fn pir_largest_collection_test() {
 
 #[test]
 fn pir_sizes() {
-    logger_init();
-
     let size = 288;
     let index = 70;
 

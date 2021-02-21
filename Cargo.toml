@@ -4,20 +4,11 @@ version = "0.1.0"
 authors = ["Sebastian Angel <sebs@cs.utexas.edu>"]
 edition = "2018"
 
-[features]
-default = []
-suppress-stdout = ["gag", "log"]
-
 [build-dependencies]
 cc = "1.0"
 cmake = "0.1"
-
-[dev-dependencies]
-env_logger = "0.8"
 
 [dependencies]
 libc = "0.2"
 rand = "0.8"
 serde = { version = "1.0", features = ["derive"] }
-gag = { version = "0.1", optional = true }
-log = { version = "0.4", optional = true }
