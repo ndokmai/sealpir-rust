@@ -142,7 +142,7 @@ impl PirClient {
 
             // offset into the FV plaintext
             let offset = get_fv_offset(self.client, ele_index, self.ele_size);
-            assert!(offset + self.ele_size <= result_size as u32);
+            assert!(offset * self.ele_size + self.ele_size <= result_size as u32);
 
             let r = slice::from_raw_parts_mut((ptr as *mut T).offset(offset as isize), 1).to_vec();
             libc::free(ptr as *mut libc::c_void);
@@ -173,10 +173,10 @@ impl PirClient {
 
             // offset into the FV plaintext
             let offset = get_fv_offset(self.client, ele_index, self.ele_size);
-            assert!(offset + self.ele_size <= result_size as u32);
+            assert!(offset * self.ele_size + self.ele_size <= result_size as u32);
 
             let r = slice::from_raw_parts_mut(
-                (ptr as *mut u8).offset(offset as isize),
+                (ptr as *mut u8).offset((offset * self.ele_size) as isize),
                 self.ele_size as usize,
             )
             .to_vec();

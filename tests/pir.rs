@@ -1,4 +1,4 @@
-use rand::RngCore;
+use rand::{Rng, RngCore};
 use sealpir::client::PirClient;
 use sealpir::server::PirServer;
 
@@ -37,7 +37,7 @@ fn pir_very_small_collection_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
@@ -74,7 +74,7 @@ fn pir_small_collection_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply_to_vec(index, &reply);
@@ -111,7 +111,7 @@ fn pir_small_collection_decode_to_vec_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
@@ -146,7 +146,7 @@ fn pir_small_collection_update_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     rng.fill_bytes(&mut collection[0]);
     server.update(&collection[..], 0);
 
@@ -188,7 +188,7 @@ fn pir_medium_collection_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
@@ -222,7 +222,7 @@ fn pir_large_collection_test() {
     server.set_galois_key(key, 0);
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
@@ -260,7 +260,7 @@ fn pir_very_large_collection_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
@@ -298,7 +298,7 @@ fn pir_largest_collection_test() {
 
     server.setup(&collection[..]);
 
-    let index = 0;
+    let index = rng.gen::<u32>() % num;
     let query = client.gen_query(index);
     let reply = server.gen_reply(&query, 0);
     let result = client.decode_reply::<[u8; 288]>(index, &reply);
