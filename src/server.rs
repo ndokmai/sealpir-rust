@@ -116,9 +116,49 @@ impl PirServer {
         output_log_info(stdout_buf.as_mut());
     }
 
+    pub fn setup_bytes(&mut self, collection: &[u8], element_size: usize) {
+        assert_eq!(collection.len() / element_size, self.ele_num as usize);
+        assert_eq!(element_size, self.ele_size as usize);
+
+        #[cfg(feature = "suppress-stdout")]
+        let mut stdout_buf = BufferRedirect::stdout().ok();
+
+        unsafe {
+            set_database(
+                self.server,
+                collection.as_ptr() as *const u8,
+                self.ele_num,
+                self.ele_size,
+            );
+
+            preprocess_db(self.server);
+        }
+
+        #[cfg(feature = "suppress-stdout")]
+        output_log_info(stdout_buf.as_mut());
+    }
+
     pub fn update<T>(&mut self, collection: &[T], index: usize) {
         assert_eq!(collection.len(), self.ele_num as usize);
         assert_eq!(mem::size_of::<T>(), self.ele_size as usize);
+        assert!(index < collection.len());
+
+        unsafe {
+            update_database(
+                self.server,
+                collection.as_ptr() as *const u8,
+                self.ele_num,
+                self.ele_size,
+                index as u32,
+            );
+
+            preprocess_db(self.server);
+        }
+    }
+
+    pub fn update_bytes(&mut self, collection: &[u8], element_size: usize, index: usize) {
+        assert_eq!(collection.len() / element_size, self.ele_num as usize);
+        assert_eq!(element_size, self.ele_size as usize);
         assert!(index < collection.len());
 
         unsafe {
